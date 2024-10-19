@@ -165,7 +165,7 @@ for p = 1:numel(animal_t_stats_paths_preLesion)
                 subplot(numel(lick_num),4,w(s)); hold on  
                 stairs(x_bin, (prot_angle_bin{1, t, s}/sum(prot_angle_bin{1, t, s})), colors{t})       
                 ylim([0 0.5])
-                xlim([-22 22])
+                xlim([-25 25])
                 xlabel('Protrusion Angle (deg)')
                 ylabel('Probability')
                 title(sprintf('%s %d %s', 'Lick', s, 'Relative to First Contact (Intact)'))

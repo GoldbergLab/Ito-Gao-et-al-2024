@@ -21,7 +21,7 @@ for i=start_row:end_row
             % for stim. without cues, number of trials is number of videos    
             if strcmp(stim_type,'uncued')
                 t_stats = data_indiv{i,j};
-                session_latency = nan(1,numel(t_stats_combined));
+                session_latency = nan(1,numel(video_descriptor));
                 for p=1:max([t_stats.trial_num])
 
                     l_index = find(([t_stats.trial_num]==p)&([t_stats.time_rel_cue]>0)&([t_stats.laser_2D]==1));
