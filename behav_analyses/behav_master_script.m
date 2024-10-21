@@ -9,7 +9,7 @@ data_root = 'Z:\bsi8\Ito, Gao et. al (2024)\Revision_2\Open data repo\datasets';
 % figure panel, and run this script to analyze the data and generate the
 % figure.
 
-%% Fig 1d-f, Extd Fig 2g-h, Fig 5b: Analysis of bilateral optogenetic inhibition or behavior only (L2 or L4 recentering)
+%% Fig 1d-f, Fig 2c, Extd Fig 2g-h, Fig 5b: Analysis of bilateral optogenetic inhibition or behavior only (L2 or L4 recentering)
 fig_name = "Fig 1d-f, Extd Fig 2g-h, Fig 5b: Analysis of bilateral optogenetic inhibition or behavior only (L2 or L4 recentering)";
 
 % Parameter options:
@@ -19,12 +19,15 @@ fig_name = "Fig 1d-f, Extd Fig 2g-h, Fig 5b: Analysis of bilateral optogenetic i
 %   Fig 1d left             behavior_2D_data.mat        1           0              contactSite      example mouse is #9 in the dataset
 %   Fig 1d center           "                           2           0              "                "
 %   Fig 1d right            "                           3           0              "                "
-%   Fig 1e left             behavior_2D_data.mat        1           0              protAngle        example mouse is #1 in the dataset
+%   Fig 1e left             behavior_2D_data.mat        1           0              protAngle        example mouse is #7 in the dataset 
 %   Fig 1e center           behavior_2D_data.mat        2           0              "                "
 %   Fig 1e right            behavior_2D_data.mat        3           0              "                "
 %   Fig 1f left             ALM_bilateral_data.mat      3           0              protAngle
 %   Fig 1f center           TJM1_bilateral_data.mat     3           0              "
 %   Fig 1f right            TJS1_bilateral_data.mat     3           0              "
+%   Fig 2c left             TJM1_right_data.mat         3           0              "                example mouse is #3 in the dataset
+%   Fig 2c center           TJM1_left_data.mat          3           0              "                example mouse is #3 in the dataset
+%   Fig 2c right            SC_left_data.mat            3           0              "                example mouse is #4 in the dataset
 %   Fig 4b top left         behavior_recenter_data.mat  3           1              contactSite      example mouse is #2 in the dataset
 %   Fig 4b top center       behavior_recenter_data.mat  4           1              "                "
 %   Fig 4b top right        behavior_recenter_data.mat  5           1              "                "
@@ -50,7 +53,7 @@ ylabel_input = 'protAngle';
 % modify the following variables to adjust figure paremeters
 ylim_val = [-20 20]; % adjust plot y-axis of summary plots, change based on the variable analyzed
 min_max_angle = [-30 30]; % range of histogram, change based on the variable analyzed
-plot_individual = 0; % whether to plot for each mouse
+plot_individual = 1; % whether to plot for each mouse
 
 
 % leave the following to default
@@ -130,7 +133,7 @@ fig_name = "Fig 2e, Extd Fig 5c-f, Analysis of unilateral optogenetic inhibition
 %   Extd Fig 5f left    {'SC_left_data.mat','SC_right_data.mat'}        "
 
 % load one pair of datasets to analyze:
-data_set_all = {'SC_vgat_CHR2_left_data.mat', 'SC_vgat_CHR2_right_data.mat'}; 
+data_set_all = {'TJM1_left_data.mat', 'TJM1_right_data.mat'}; 
 % select which kinematic variable to analyze, choose from: protAngle, latDisp, duration, pathlength, maxSpeed, accPeakNum, InterLickInterval, contactON_lickOFF, contactON_protOFF, contactSite, retractAngle:
 ylabel_input = 'protAngle'; 
 
@@ -222,7 +225,6 @@ data_set = 'stim_uncued_data.mat';
 % which trial type to analyze, select from 'ctrl','cued','uncued'
 stim_type = 'uncued';
 animal_ID = [1,3,5,6,7,8]; % for this analysis, we only considered sessions with activations of the same 400ms durations
-
 
 % leave the following to default:
 start_column=1; % most lateral site to analyze. Based on histology, all AP locations have at most two different sites in the ML direction. They are always input to the first two columns.
@@ -336,7 +338,7 @@ fig_name = "Extd Fig 1, Extd Fig 4: compare two sets of sessions";
 %
 %   figure panel        data_set_one            data_set_two            lick_num    true_L1     ylabel_input    ylim_val    notes
 %   --------------------------------------------------------------------------------------------------------------------------------------------------------------
-%   Extd Fig 1d left    L2_dispense_data.mat    L3_dispense_data.mat    1           0           protAngle       [-20 20]    example mouse is #7 in the dataset for Extd Fig 1c 
+%   Extd Fig 1d left    L2_dispense_data.mat    L3_dispense_data.mat    1           0           protAngle       [-20 20]    example mouse is #5 in the dataset for Extd Fig 1c 
 %   Extd Fig 1d cemter  L2_dispense_data.mat    L3_dispense_data.mat    2           0           "               "
 %   Extd Fig 1d right   L2_dispense_data.mat    L3_dispense_data.mat    3           0           "               "
 %   Extd Fig 4b         pre_lesion_data.mat     post_lesion_data.mat    3           0           protAngle       [-20 20]
@@ -347,18 +349,18 @@ fig_name = "Extd Fig 1, Extd Fig 4: compare two sets of sessions";
 %   Extd Fig 4h         "                       "                       1           1           accPeakNum      [0 10]
 
 % load two datasets to analyze:
-data_set_one = 'pre_lesion_data.mat';
-data_set_two = 'post_lesion_data.mat'; 
+data_set_one = 'L2_dispense_data.mat';
+data_set_two = 'L3_dispense_data.mat'; 
 
 % select what to analyze:
-lick_num = 1; % L2: where the nick happens, L3 where lick re-aiming happens, L4 where recentering nick happens, L5: where recentering happens, select only one lick here, if you want to compare across licks, use the code in the last section
-true_L1 = 1; % 1: the first lick after the cue; 0: first lick that makes spout contact
-ylabel_input = 'accPeakNum'; % which kinematic variable to analyze, choose from: protAngle, latDisp, duration, pathlength, maxSpeed, accPeakNum, InterLickInterval, contactON_lickOFF, contactON_protOFF, contactSite, retractAngle, reaction_time
+lick_num = 3; % L2: where the nick happens, L3 where lick re-aiming happens, L4 where recentering nick happens, L5: where recentering happens, select only one lick here, if you want to compare across licks, use the code in the last section
+true_L1 = 0; % 1: the first lick after the cue; 0: first lick that makes spout contact
+ylabel_input = 'protAngle'; % which kinematic variable to analyze, choose from: protAngle, latDisp, duration, pathlength, maxSpeed, accPeakNum, InterLickInterval, contactON_lickOFF, contactON_protOFF, contactSite, retractAngle, reaction_time
 
 % modify the following variables to adjust figure paremeters
-ylim_val=[0 10]; % adjust plot y-axis of summary plots, change based on the variable analyzed
+ylim_val=[-20 20]; % adjust plot y-axis of summary plots, change based on the variable analyzed
 min_max_angle = [-30 30]; % range of histogram, change based on the variable analyzed
-plot_individual = 0; % whether to plot for each mouse
+plot_individual = 1; % whether to plot for each mouse
 
 
 % leave the following to default
