@@ -78,7 +78,7 @@ for x = 1:numel(sp_struct)
         contact_centroid = sp_struct(x).contact_centroid;
         protrusion_onset = sp_struct(x).protrusion;
         protrusion_offset = sp_struct(x).protrusion_offset;
-        protrusion = cellfun(@(x, y) x + y, protrusion_onset, protrusion_offset, 'UniformOutput', false);
+        protrusion_offset_cue = cellfun(@(x, y) x + y, protrusion_onset, protrusion_offset, 'UniformOutput', false);
         sp_contact = sp_struct(x).sp_contact;
         tip_xf_prot = sp_struct(x).tip_xf_prot;
         tip_yf_prot = sp_struct(x).tip_yf_prot;
@@ -99,7 +99,7 @@ for x = 1:numel(sp_struct)
         
         % filter relevant kinematic variables
         for i = 1:numel(lick_num)
-            prot_filt{v}(i, :) = cellfun(@(z, y) y(z == lick_num(i)), lick_index_contact1_filt{v}, protrusion(filter_ind));
+            prot_off_cue_filt{v}(i, :) = cellfun(@(z, y) y(z == lick_num(i)), lick_index_contact1_filt{v}, protrusion_offset_cue(filter_ind));
             sp_contact_filt{v}(i, :) = cellfun(@(z, y) y(z == lick_num(i)), lick_index_contact1_filt{v}, sp_contact(filter_ind));
     
             contact_centroid_filt{v}(i, :) = cellfun(@(z, y) y(z == lick_num(i)), lick_index_contact1_filt{v}, contact_centroid(filter_ind));
@@ -116,6 +116,7 @@ for x = 1:numel(sp_struct)
             prot_off_filt{v}(i, :) = cellfun(@(z, y) y(z == lick_num(i)), lick_index_contact1_filt{v}, prot_off(filter_ind));
             peak_prot_speed_filt{v}(i, :) = cellfun(@(z, y) y(z == lick_num(i)), lick_index_contact1_filt{v}, peak_prot_speed(filter_ind));
             volume_filt{v}(i, :) = cellfun(@(z, y) y(z == lick_num(i)), lick_index_contact1_filt{v}, volume(filter_ind));
+            prot_onset_filt{v}(i, :) = cellfun(@(z, y) y(z == lick_num(i)), lick_index_contact1_filt{v}, protrusion_onset(filter_ind));
             if isfield(sp_struct, 'contact_dur')
                 contact_dur_filt{v}(i, :) = cellfun(@(z, y) y(z == lick_num(i)), lick_index_contact1_filt{v}, contact_dur(filter_ind));
             end
@@ -131,7 +132,7 @@ sp_vars_struct = struct('fakeout_trial_filt', fakeout_trial_filt);
 [sp_vars_struct.recenter_trial_filt] = deal(recenter_trial_filt{:});
 [sp_vars_struct.lick_index_contact1_filt] = deal(lick_index_contact1_filt{:});
 [sp_vars_struct.sp_times_filt] = deal(sp_times_filt{:});
-[sp_vars_struct.prot_filt] = deal(prot_filt{:});
+[sp_vars_struct.prot_off_cue_filt] = deal(prot_off_cue_filt{:});
 [sp_vars_struct.sp_contact_filt] = deal(sp_contact_filt{:});
 [sp_vars_struct.contact_centroid_filt] = deal(contact_centroid_filt{:});
 [sp_vars_struct.tip_xf_prot_filt] = deal(tip_xf_prot_filt{:});
@@ -147,6 +148,7 @@ sp_vars_struct = struct('fakeout_trial_filt', fakeout_trial_filt);
 [sp_vars_struct.prot_off_filt] = deal(prot_off_filt{:});
 [sp_vars_struct.peak_prot_speed_filt] = deal(peak_prot_speed_filt{:});
 [sp_vars_struct.volume_filt] = deal(volume_filt{:});
+[sp_vars_struct.prot_onset_filt] = deal(prot_onset_filt{:});
 if isfield(sp_struct, 'contact_dur')
     [sp_vars_struct.contact_dur_filt] = deal(contact_dur_filt{:});
 end

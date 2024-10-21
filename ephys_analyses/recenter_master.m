@@ -151,6 +151,8 @@ clearvars fiducial_xy
 
 %% Calculate binned contact angle and firing rate correlations relative to tongue and head
 
+selectivity = sig_struct.selectivity_cent;
+
 % filter vars for only neurons modulated both in fakeout and recentering
 fakeout_recenter_sig_ind = [selectivity{:, 1}] ~= 0 & ([selectivity{:, 2}] ~= 0 | [selectivity{:, 3}] ~= 0);
 
