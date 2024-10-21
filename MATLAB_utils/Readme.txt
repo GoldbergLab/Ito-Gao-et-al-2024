@@ -1,0 +1,1 @@
+This is a collection of MATLAB utility functions that were used by the TongueTipTrackerApp code for Ito, Gao et. al (2024). Please add these to your path to run TongueTipTrackerApp. This is a subset of the MATLAB_utils repo, which can be found here: https://github.com/GoldbergLab/MATLAB-utils.
