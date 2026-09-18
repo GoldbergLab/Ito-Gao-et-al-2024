@@ -83,6 +83,8 @@ clearvars fiducial_xy
 
 %% Single Neuron Latency to Divergence for L2 - Fig. 3g
 
+selectivity = sig_struct.selectivity;
+
 params.align_lick_num = 2;
 params.bin_window = [-0.30 0.30];
 params.bin_size = 0.001;
@@ -120,7 +122,6 @@ clearvars params
 
 num_shuffles = 1000;
 pca_fakeout(sp_vars_struct, lick_num, num_shuffles)
-view(-135, 45)
 
 %% Calculate binned contact angle and firing rate correlations
 
@@ -134,7 +135,7 @@ ang_max = 18;
 ang_bin_width = 3;
 ang_bin = ang_min:ang_bin_width:ang_max;
 
-% define minimum trial number needed to average
+% define minimum trial number needed to average per bin
 min_trial_num = 2;
 
 % calculate the mean angles and mean firing rates 
@@ -144,6 +145,10 @@ num_shuffles = 1000;
 clearvars contact_ang_sig_hc contact_ang_sig min_trial_num ang_min ang_max ang_bin_width ang_bin x
 
 %% Calculate Skaggs Spatial Information (bits/spk) - Fig. 3d
+
+% Note that as the significance is calculated via bootstrap, there may be a
+% few neurons which may or may not pass, depending on the bootstrap.
+% However, the fraction significant should be approximately 42%. 
 
 % calculate spatial info
 corr_lick_num = 2;
@@ -198,6 +203,10 @@ ylabel('Contact Location Information (bits/spike)')
 clearvars prctile_temp mean_fr_min mean_info mean_info_not_sig total_sig_info total_not_sig iqr_spatial_info i
 
 %% Calculate contact angle and firing rate correlation. Plot single neurons for Fig. 3a and Extended Data Fig. 6a.
+
+% Note that as the significance is calculated via bootstrap, there may be a
+% few neurons which may or may not pass, depending on the bootstrap.
+% However, the fraction significant should be approximately 34%. 
 
 % store p-values and corr. coefficients of each neuron. plot if desired
 corr_lick_num = 2;
@@ -289,7 +298,7 @@ no_recenter = true;
 % contact tracking data (contact_centroid_lick_num).  
 lick_num = [1 2 3 4 5];
 params.lick_exist_lick_num = [1 2 3 4 5];
-params.sp_contact_lick_num = [1 2 3 4 ];
+params.sp_contact_lick_num = [1 2 3 4 5];
 params.sp_contact2_absent_lick_num = [1 2 3 4 5];
 params.contact_centroid_lick_num = [1 2 3 4 5];
 
@@ -516,15 +525,15 @@ for n = neuron_ID
                 
         for j = trial_ind
             % collect lick rate (volume) and firing rate till the end of the analysis window
-            train_offset = sp_vars_temp.prot_filt(start_lick,j) + analysis_window(2);
+            train_offset = sp_vars_temp.prot_onset_filt(start_lick,j) + analysis_window(2);
             volume_temp = sp_vars_temp.volume_filt(:,j);
             if train_offset >1300
                 train_offset = 1300;
             end
             lr_train = zeros(1,train_offset);
             for k = 2:numel(volume_temp)
-                if sp_vars_temp.prot_filt(k,j) > 0
-                    lr_train(sp_vars_temp.prot_filt(k,j):sp_vars_temp.prot_filt(k,j)+numel(volume_temp{k})-1) = volume_temp{k};
+                if sp_vars_temp.prot_onset_filt(k,j) > 0
+                    lr_train(sp_vars_temp.prot_onset_filt(k,j):sp_vars_temp.prot_onset_filt(k,j)+numel(volume_temp{k})-1) = volume_temp{k};
                 end
             end            
             sp_times_temp = sp_vars_temp.sp_times_filt{j};
@@ -535,7 +544,7 @@ for n = neuron_ID
                 end
             end
             % trim lick rate and firing rate at the start of the analysis window           
-            train_onset = sp_vars_temp.prot_filt(start_lick,j) - analysis_window(1);
+            train_onset = sp_vars_temp.prot_onset_filt(start_lick,j) - analysis_window(1);
             if train_onset <= 0
                 fr_all(j,:) = nan(1,numel(fr_all(j,:)));
                 lr_all(j,:) = nan(1,numel(fr_all(j,:)));
@@ -736,21 +745,28 @@ ylim([0 0.5])
 xlabel('Max x-corr coef')
 ylabel('Probability')
 end
-%
+
 function [venn_data] = get_venn_data(selectivity_aiming)
 for i = 1:size(selectivity_aiming,1)
+    % ipsi only
     if selectivity_aiming(i,1) == 1 && selectivity_aiming(i,2) ~= 1 && selectivity_aiming(i,3) ~= 1
         selectivity_aiming(i,4) = 1;
+    % center only
     elseif selectivity_aiming(i,1) ~= 1 && selectivity_aiming(i,2) == 1 && selectivity_aiming(i,3) ~= 1
         selectivity_aiming(i,4) = 2;
+    % contra only
     elseif selectivity_aiming(i,1) ~= 1 && selectivity_aiming(i,2) ~= 1 && selectivity_aiming(i,3) == 1
         selectivity_aiming(i,4) = 3;
+    % ipsi + center
     elseif selectivity_aiming(i,1) == 1 && selectivity_aiming(i,2) == 1 && selectivity_aiming(i,3) ~= 1
         selectivity_aiming(i,4) = 4;
+    % contra + ipsi
     elseif selectivity_aiming(i,1) == 1 && selectivity_aiming(i,2) ~= 1 && selectivity_aiming(i,3) == 1
         selectivity_aiming(i,4) = 5;      
+    % center + contra
     elseif selectivity_aiming(i,1) ~= 1 && selectivity_aiming(i,2) == 1 && selectivity_aiming(i,3) == 1
         selectivity_aiming(i,4) = 6;
+    % contra + center + ipsi
     elseif selectivity_aiming(i,1) == 1 && selectivity_aiming(i,2) == 1 && selectivity_aiming(i,3) == 1
         selectivity_aiming(i,4) = 7;
     else

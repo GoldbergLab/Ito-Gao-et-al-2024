@@ -3,14 +3,14 @@ function pca_fakeout(sp_vars_struct, lick_num, num_shuffles)
 sp_times_filt = {sp_vars_struct.sp_times_filt};
 sp_contact_filt = {sp_vars_struct.sp_contact_filt};
 fakeout_trial_filt = {sp_vars_struct.fakeout_trial_filt};
-prot_filt = {sp_vars_struct.prot_filt};
+prot_onset_filt = {sp_vars_struct.prot_onset_filt};
 
 % note that, we want to have spare bins to the left and right of what we
 % care about in bin_window for smoothing of PSTHs below.
 align_lick_num = 2;
 smooth_bin_window = [-0.35 0.35];
 pca_bin_window = [-0.3 0.3];
-bin_size = 0.005;
+bin_size = 0.01;
 convert_to_sec = 1;
 sp_times_bin_norm = cell(numel(sp_times_filt), 1);
 for i = 1:numel(sp_times_filt)
@@ -58,9 +58,9 @@ fakeout_pca = mean_fakeout_firing_rate_pca'*top_pcs;
 start_ind = 1;
 end_ind = size(mean_fakeout_firing_rate_pca, 2)/3;
 contact_bin = abs(pca_bin_window/bin_size) + 1;
-L3_prot_time = round(mean(cellfun(@(x) mean(x(2, :)), prot_filt)));
-L3_contact_time = round(mean(cellfun(@(x) mean(x(2, :)), sp_contact_filt)));
-L2_contact_time = round(mean(cellfun(@(x) mean(x(1, :)), sp_contact_filt)));
+L3_prot_time = round(mean(cellfun(@(x) mean(x(3, :)), prot_onset_filt)));
+L3_contact_time = round(mean(cellfun(@(x) mean(x(3, :)), sp_contact_filt)));
+L2_contact_time = round(mean(cellfun(@(x) mean(x(2, :)), sp_contact_filt)));
 L3_contact_bin = round((L3_contact_time - L2_contact_time)/(bin_size*1000));
 L3_prot_bin = round((L3_prot_time - L2_contact_time)/(bin_size*1000));
 h = figure();
@@ -85,6 +85,7 @@ zlim([-5 5]);
 xticks([-7 0 7]);
 yticks([-4 0 4]);
 zticks([-5 0 5]);
+view(-135, 45)
 
 % Order of conditions is: 1) left, 2) center, 3) right 
 dist_length = size(fakeout_pca, 1)/3;
@@ -96,7 +97,31 @@ left_center_dist_rand = nan(num_shuffles, numel(left_center_dist));
 right_center_dist_rand = nan(num_shuffles, numel(right_center_dist));
 z_left_center_dist_thresh = nan(num_shuffles, 1);
 z_right_center_dist_thresh = nan(num_shuffles, 1);
+
+% For the neural distances, we want 5 ms bins. Re-bin with 5 ms bins.
+align_lick_num = 2;
+smooth_bin_window = [-0.35 0.35];
+pca_bin_window = [-0.3 0.3];
+bin_size = 0.005;
+convert_to_sec = 1;
+sp_times_bin_norm = cell(numel(sp_times_filt), 1);
+for i = 1:numel(sp_times_filt)
+    % align and bin firing rates
+    sp_times_bin_temp = get_bin_firing_rates(sp_times_filt{i}, sp_contact_filt{i}, lick_num, align_lick_num, smooth_bin_window, bin_size, convert_to_sec);
+    
+    % normalize firing rates to standard deviation as in Ames et al. 2019 
+    std_temp = std(sp_times_bin_temp, [], 'all');
+    if std_temp >= 1
+        sp_times_bin_norm{i} = sp_times_bin_temp/std_temp;
+    elseif std_temp < 1
+        sp_times_bin_norm{i} = sp_times_bin_temp;
+    end
+end
+
 for x = 1:num_shuffles
+
+    disp(['Shuffle =' ' ' num2str(x)])
+
     % randomly select neurons with replacement
     neuron_ind = randi([1 numel(sp_times_bin_norm)], numel(sp_times_bin_norm), 1);
     

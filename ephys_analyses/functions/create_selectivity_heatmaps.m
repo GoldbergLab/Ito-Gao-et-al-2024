@@ -3,7 +3,6 @@ function create_selectivity_heatmaps(sp_vars_struct, sig_struct, params, lick_nu
 sp_times_filt = {sp_vars_struct.sp_times_filt};
 sp_contact_filt = {sp_vars_struct.sp_contact_filt};
 fakeout_trial_filt = {sp_vars_struct.fakeout_trial_filt};
-prot_filt = {sp_vars_struct.prot_filt};
 
 align_lick_num = params.align_lick_num;
 smooth_bin_window = params.smooth_bin_window;
